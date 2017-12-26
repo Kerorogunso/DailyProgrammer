@@ -16,19 +16,20 @@ def polyominoes(n):
 		# Iterate through filled points in the grid
 		for x in filled_points:
 			# List out their neighbours
-			candidates = [(min(x[0]+1,len(grid)), x[1]), (max(x[0]-1,0),x[1]), (x[0],min(x[1]+1,len(grid))), (x[0], max((x[1]-1),0))]
+			candidates = [(min(x[0]+1,len(grid)-1), x[1]), (max(x[0]-1,0),x[1]), (x[0],min(x[1]+1,len(grid)-1)), (x[0], max((x[1]-1),0))]
 			# Include the neighbour if its not filled yet otherwise pick nothing
 			valid_points = set(map(lambda k: k if grid[k[0]][k[1]] == 0 else None, candidates))
 			# Add to the list of possible neighbours
-			neighbours.union(valid_points).difference({None})
+			neighbours = neighbours.union(valid_points).difference({None})
 
 		return neighbours # provide list of all neighbouring blank spots
 
 	# Keep picking a point until you have enough for a polynomino	
 	def pick_point(grid):
 		options = neighbouring_points(grid) # Identify what neighbours there are
-
-		if reduce(lambda x, y: x + y, grid) == n: # All points filled
+		
+		if sum(sum([y for y in x]) for x in grid) == n: # All points filled
+			# grid = grid.tolist()
 			print(grid)
 		else:
 			for x in options: # Go through each option
