@@ -1,7 +1,7 @@
-import nltk
 from nltk.corpus import words
 from copy import deepcopy
 import itertools
+from collections import defaultdict
 
 class SentenceTree:
     def __init__(self, grid):
@@ -43,50 +43,41 @@ class SentenceTree:
                 if word_count > max_words:
                     max_words = word_count
 
-        return max_words
+        return max_words 
 
-    def evaluate(self):
-        if not self.next_moves() and traversed != len(self.grid) * len(self.grid[0]):
-            return float("-inf") # invalid path
-        elif not self.next_moves() and traversed == len(self.grid) * len(self.grid[0]):
-            return float(0) # complete valid path
-        else:
-            return self.detect_english(''.join(self.letter_history)) # count english words in the traversed
+# Generate all the paths of length max length
+def traverse(grid):
+    paths = [SentenceTree(grid)]
+    
+    for i in range(1, len(grid) * len(grid[0]) + 1):
+        new_list = [self.traversed]
+        for obj in paths:
+            for move in obj.next_moves():
+                new_obj = deepcopy(obj).apply_move(move[0],move[1])
+                new_list.append(new_obj)
+
+        new_list = [x for x in new_list if len(x.traversed) == i + 1]
+        paths = deepcopy(new_list)
+        print(len(new_list), i, new_list[0].letter_history)
+
+    return [x.letter_history for x in paths]
 
 def sentence_unpack(sentence):
     instructions, letters = sentence.split('\n')[0].split(' '), [x.split(' ') for x in sentence.split('\n')[1:]]
     lines_to_read = int(instructions[0])
     start_node = [int(instructions[1]) - 1, int(instructions[2]) - 1]
 
-    def max_value(tree):
-        return max(tree.next_moves(), key = tree.evaluate)
+    path_list = traverse(letters)
+    return path_list
 
-    tree = SentenceTree(letters)
-    while tree.next_moves():
-        best_move = max(tree.next_moves(), key = lambda x: tree.apply_move(x[0],x[1]).evaluate())
-        tree = tree.apply_move(best_move[0], best_move[1])
-
-    return tree.traversed
-
-def traverse(test):
-    paths = [SentenceTree()]
-    changing = True
-    while changing:
-        for path in paths:
-            new_paths = []
-            for move in path.next_moves():
-                new_paths.append([path, move])
-
-        if new_paths == paths:
-            changing = False
-        else:
-            paths = new_paths
-
-    return all_paths_length_36
+def trie(grid):
+    sentence_tree = SentenceTree(grid)
+    trie_path = defaultdict(key = lambda : {})
+    
+    trie_path[sentence_tree.current_point()] = {node for node in sentence_tree.next_moves()}
+    
 
 
-
-        
 if __name__ == "__main__":
     test = '''6 1 1
 T H T L E D
@@ -95,4 +86,4 @@ I G S D I S
 Y G A W S I 
 W H L Y N T
 I T A R G I'''
-    sentence_unpack(test)
+    print(sentence_unpack(test))
