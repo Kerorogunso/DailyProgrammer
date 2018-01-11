@@ -91,12 +91,13 @@ def regex_grid(n):
     
     return grid
 
-def regex_fractal(n):
+def regex_fractal(n, regex):
     grid = regex_grid(n)
 
     img = Image.new( 'RGB', (len(grid), len(grid)), "white")
     pixels = img.load()
-    regex = '.*(?:13|321)(.*)'
+    # regex = '.*(?:13|321)(.*)'
+    # regex = raw_input("Regex please (example .*(?:13|321)(.*) .*1(.*):")
     #regex = '.*1(.*)'
 
     for i in range(img.size[0]):
@@ -109,7 +110,9 @@ def regex_fractal(n):
 
     img.show()
 
-regex_fractal(10)
+if __name__ == "__main__":
+    user_input = input("Please give me a regular expression: ")
+    regex_fractal(10, user_input)
 
             
 
