@@ -80,12 +80,19 @@ class hero:
             dx = jump_moves[direction][1]
             dy = jump_moves[direction][2]
 
-            if z == len(self.world.grid) - 1 or self.world.grid[z+1][x][y] != 'A':
+            # Index error
+            if any([x + dx >= len(self.world.grid[z]) or x + dx < 0,
+                    y + dy >= len(self.world.grid[z][x]) or y + dy < 0,
+                    z == len(self.world.grid) - 1]):
                 print("Can't jump.")
-            elif self.world.grid[z + dz][x + dx][y + dy] in ('D','S'):
+            # Obstruction
+            elif any([self.world.grid[z + dz][x + dx][y + dy] in ('D','S'),
+                    self.world.grid[z + dz][x][y] != 'A']):
                 print("Can't jump.")
+            # Lava Destination
             elif self.world.grid[z + dz][x + dx][y + dy] == 'L':
                 print("You dead.")
+            # Increment position if successful
             else:
                 self.position[0] += dz
                 self.position[1] += dx
